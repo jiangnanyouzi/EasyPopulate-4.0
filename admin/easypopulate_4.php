@@ -14,18 +14,19 @@ $excel_safe_output = true; // this forces enclosure in quotes
 
 // START INITIALIZATION
 require_once ('includes/application_top.php');
+require_once ('DownLoad.php');
 if (!defined('EP4_DB_FILTER_KEY')) {
   // Need to define this to support use of primary key for import/export
   //   Instead of adding an additional switch, have incorporated the conversion
-  //   of a blank product_id field to a new product in here.  Currently 
-  //   expecting three choices: products_model, products_id, and blank_new 
+  //   of a blank product_id field to a new product in here.  Currently
+  //   expecting three choices: products_model, products_id, and blank_new
   //   with model as default
   define(EP4_DB_FILTER_KEY, 'products_model'); // This could/should apply to both
   //  import and export files, so here is a good location for it.
 }
 if (!defined('EP4_ADMIN_TEMP_DIRECTORY')) {
-  // Intention is to identify which file path to reference throughout instead of 
-  //  storing the path in the database. If the individual wishes to use the 
+  // Intention is to identify which file path to reference throughout instead of
+  //  storing the path in the database. If the individual wishes to use the
   //  admin path, then this switch will direct the files to use the admin path
   //  instead of storing the path in the database.
   define('EP4_ADMIN_TEMP_DIRECTORY', 'true'); // Valid Values considered (false, true)
@@ -33,7 +34,7 @@ if (!defined('EP4_ADMIN_TEMP_DIRECTORY')) {
 if (!defined('EP4_SHOW_ALL_FILETYPES')) {
   // Intention is to force display of all file types and files for someone
   //  that hasn't done an update on the database as part of installing this
-  //  software.  Perhaps could/need to create a default(s) file to 
+  //  software.  Perhaps could/need to create a default(s) file to
   //  assist with installation/operation.  mc12345678 12/30/15
   define('EP4_SHOW_ALL_FILETYPES', 'true');
 }
@@ -72,7 +73,7 @@ if ((isset($error) && !$error) || !isset($error)) {
 /* Test area start */
 // error_reporting(E_ERROR | E_WARNING | E_PARSE | E_NOTICE);//test purposes only
 // register_globals_vars_check();
-// $maxrecs = 4; 
+// $maxrecs = 4;
 // usefull stuff: mysql_affected_rows(), mysql_num_rows().
 $ep_debug_logging_all = false; // do not comment out.. make false instead
 //$sql_fail_test == true; // used to cause an sql error on new product upload - tests error handling & logs
@@ -121,8 +122,8 @@ if (substr($tempdir, 0, 1) == '/') {
 $ep_debug_log_path = (EP4_ADMIN_TEMP_DIRECTORY !== 'true' ? /* Storeside */ DIR_FS_CATALOG : /* Admin side */ DIR_FS_ADMIN) . $tempdir;
 
 // Check the current path of the above directory, if the selection is the
-//  store directory, but the path leads into the admin directory, then 
-//  reset the selection to be the admin directory and modify the path so 
+//  store directory, but the path leads into the admin directory, then
+//  reset the selection to be the admin directory and modify the path so
 //  that the admin directory is no longer typed into the path.  This same
 //  action occurs in the configuration window now, but this is in case
 //  operation of the program has allowed some other modification to occur
@@ -131,7 +132,7 @@ if (EP4_ADMIN_TEMP_DIRECTORY !== 'true') {
   if (strpos($ep_debug_log_path, DIR_FS_ADMIN) !== false) {
     $temp_rem = substr($ep_debug_log_path, strlen(DIR_FS_ADMIN));
     $db->Execute('UPDATE ' . TABLE_CONFIGURATION . ' SET configuration_value = \'true\' where configuration_key = \'EP4_ADMIN_TEMP_DIRECTORY\'', false, false, 0, true);
-    
+
     $db->Execute('UPDATE ' . TABLE_CONFIGURATION . ' SET configuration_value = \'' . $temp_rem . '\' WHERE configuration_key = \'EASYPOPULATE_4_CONFIG_TEMP_DIR\'', false, false, 0, true);
 
     // need a message to  be displayed...
@@ -349,7 +350,7 @@ if (((isset($error) && !$error) || !isset($error)) && (!is_null($_POST["delete"]
     </style>
   </head>
   <body onLoad="init()">
-       <?php require(DIR_WS_INCLUDES . 'header.php'); 
+       <?php require(DIR_WS_INCLUDES . 'header.php');
        $zco_notifier->notify('EP4_ZC155_AFTER_HEADER');
        ?>
 
@@ -457,7 +458,7 @@ if (((isset($error) && !$error) || !isset($error)) && (!is_null($_POST["delete"]
         </form>
 
         <?php
-// echo zen_draw_form('custom', 'easypopulate_4.php', 'id="custom"', 'get'); 
+// echo zen_draw_form('custom', 'easypopulate_4.php', 'id="custom"', 'get');
         echo zen_draw_form('custom', FILENAME_EASYPOPULATE_4, '', 'post', 'id="custom"');
         ?>
 
@@ -479,7 +480,7 @@ if (((isset($error) && !$error) || !isset($error)) && (!is_null($_POST["delete"]
                while ($manufacturers = mysqli_fetch_array($manufacturers_query)) {
                  $manufacturers_array[] = array("id" => $manufacturers['manufacturers_id'], 'text' => $manufacturers['manufacturers_name']);
                }
-			
+
              } else {
                $manufacturers_query = mysql_query("SELECT manufacturers_id, manufacturers_name FROM " . TABLE_MANUFACTURERS . " ORDER BY manufacturers_name");
                while ($manufacturers = mysql_fetch_array($manufacturers_query)) {
@@ -495,15 +496,15 @@ if (((isset($error) && !$error) || !isset($error)) && (!is_null($_POST["delete"]
              echo ' ' . zen_draw_pull_down_menu('ep_manufacturer_filter', $manufacturers_array) . ' ';
              echo ' ' . zen_draw_pull_down_menu('ep_status_filter', $status_array) . ' ';
              echo zen_draw_input_field('export', EASYPOPULATE_4_DD_FILTER_EXPORT, ' style="padding: 0px"', false, 'submit');
-             ?>				
+             ?>
           <br /><br />
         </div></form>
   <?php
-	echo zen_draw_form('custom2', FILENAME_EASYPOPULATE_4, '', 'post', 'id="custom2"'); 
+	echo zen_draw_form('custom2', FILENAME_EASYPOPULATE_4, '', 'post', 'id="custom2"');
 	?>
-	
+
     <div align = "left">
-		<?php	
+		<?php
 		$order_export_type_array  = array(array( "id" => '0', 'text' => EASYPOPULATE_4_ORDERS_DROPDOWN_FIRST ),
 			array( "id" => '1', 'text' => EASYPOPULATE_4_ORDERS_FULL ),
 			array( "id" => '2', 'text' => EASYPOPULATE_4_ORDERS_NEWFULL ),
@@ -511,15 +512,15 @@ if (((isset($error) && !$error) || !isset($error)) && (!is_null($_POST["delete"]
       array( "id" => '4', 'text' => EASYPOPULATE_4_ORDERS_ATTRIBS ));
 		$order_status_export_array = array ();
 		echo EASYPOPULATE_4_ORDERS_DROPDOWN_TITLE;
-		
+
 		echo zen_draw_pull_down_menu('ep_order_export_type', $order_export_type_array) . ' ';
     echo zen_cfg_pull_down_order_statuses(NULL, 'order_status');
 		echo zen_draw_input_field('exportorder', EASYPOPULATE_4_ORDERS_DROPDOWN_EXPORT, ' style="padding: 0px"', false, 'submit');
-		?>				
+		?>
     <br /><br />
     </div></form>
-    
-    
+
+
         <b><?php echo EASYPOPULATE_4_DISPLAY_PRODUCTS_PRICE_EXPORT_OPTION; ?></b><br />
         <!-- Download file links -->
         <a href="<?php echo zen_href_link(FILENAME_EASYPOPULATE_4, 'export=full', $request_type); ?>"><?php echo EASYPOPULATE_4_DISPLAY_COMPLETE_PRODUCTS; ?></a><br/>
@@ -532,7 +533,7 @@ if (((isset($error) && !$error) || !isset($error)) && (!is_null($_POST["delete"]
         <a href="<?php echo zen_href_link(FILENAME_EASYPOPULATE_4, 'export=categorymeta', $request_type); ?>"><?php echo EASYPOPULATE_4_DISPLAY_EXPORT_CATEGORYMETA; ?></a><br/>
 
         <br /><?php echo EASYPOPULATE_4_DISPLAY_TITLE_ATTRIBUTE; ?><br />
-        <a href="<?php echo zen_href_link(FILENAME_EASYPOPULATE_4, 'export=attrib_basic', $request_type); ?>"><?php echo EASYPOPULATE_4_DISPLAY_EXPORT_ATTRIBUTE_BASIC; ?></a><br /> 
+        <a href="<?php echo zen_href_link(FILENAME_EASYPOPULATE_4, 'export=attrib_basic', $request_type); ?>"><?php echo EASYPOPULATE_4_DISPLAY_EXPORT_ATTRIBUTE_BASIC; ?></a><br />
         <a href="<?php echo zen_href_link(FILENAME_EASYPOPULATE_4, 'export=attrib_detailed', $request_type); ?>"><?php echo EASYPOPULATE_4_DISPLAY_EXPORT_ATTRIBUTE_DETAILED; ?></a><br />
         <?php
         /* Begin SBA1 addition */
@@ -543,7 +544,7 @@ if (((isset($error) && !$error) || !isset($error)) && (!is_null($_POST["delete"]
 
           <a href="<?php echo zen_href_link(FILENAME_EASYPOPULATE_4, 'export=SBAStockProdFilter, $request_type'); ?>"><?php echo EASYPOPULATE_4_DISPLAY_EXPORT_SBA_STOCK_ASC; ?></a><br />
 
-        <?php } /* End SBA1 Addition */ 
+        <?php } /* End SBA1 Addition */
 		$zco_notifier->notify('EP4_LINK_SELECTION_END');
 		?>
         <br><?php echo EASYPOPULATE_4_DISPLAY_TITLE_EXPORT_ONLY; ?><br />
@@ -564,7 +565,7 @@ if (((isset($error) && !$error) || !isset($error)) && (!is_null($_POST["delete"]
           sort($files);
           /*
            * Have a list of files... Now need to work through them to identify what they can do.
-           * After identified what they can do, need to generate the screen view of their option(s).  Ideally, every file will have the same capability, but will be grouped with a title and associated action.  
+           * After identified what they can do, need to generate the screen view of their option(s).  Ideally, every file will have the same capability, but will be grouped with a title and associated action.
            * So need to identify the "#" of groups, and loop through the files for those groups.  Probably a case statement
            */
 
@@ -606,7 +607,7 @@ if (((isset($error) && !$error) || !isset($error)) && (!is_null($_POST["delete"]
             } // End of if file is one to manage here.
           } // End For $i of $files
           ksort($filetypes);
-          
+
           $filenames_merged = array();
           $filenames_merged = array_merge($filenames, array("zzzzzzzz" => CATCHALL_EP_DESC));
 
@@ -692,7 +693,7 @@ if (((isset($error) && !$error) || !isset($error)) && (!is_null($_POST["delete"]
             if (EP4_SHOW_ALL_FILETYPES == 'Hidden') {
               break;
             }
-          } // End foreach filetype 
+          } // End foreach filetype
           if (EP4_SHOW_ALL_FILETYPES != 'Hidden') {
             echo "</table>\n";
             if (sizeof($filetypes) == 0 && EP4_SHOW_ALL_FILETYPES == 'false') {

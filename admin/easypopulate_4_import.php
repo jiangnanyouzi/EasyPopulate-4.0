@@ -939,15 +939,22 @@ if (!is_null($_POST['import']) && isset($_POST['import'])) {
                         $imagePath = 'easypopulate/' . date('Y/m/d/') . $v_products_model . '/';
                         @mkdir($rootPath . $imagePath, 0777, true);
                         @chmod($rootPath . $imagePath, 0777);
+                        $v_products_image = $imagePath . md5($image) . '.png';
+
                         try {
-                            $v_products_image = $imagePath . md5($image) . '.png';
-                            file_put_contents($rootPath . $v_products_image, file_get_contents($image));
+                            $download_config = array();
                             foreach ($images as $index => $row) {
-                                if ($index == 0) continue;
-                                file_put_contents($rootPath . $imagePath . md5($image) . '_' . $index . '.png', file_get_contents($row));
+                                $filename = $rootPath . $imagePath . md5($image) . ($index == 0 ? '' :  '_' . $index) . '.png';
+                                $download_config[] = array($row, $filename);
                             }
-                        }catch (Exception $e){}
+                            $obj = new DownLoad($download_config, 20, 120);
+                            $handle_num = $obj->download();
+
+                        } catch (Exception $e) {
+                        }
                     }
+
+
                     if (($ep_uses_mysqli ? mysqli_num_rows($result) : mysql_num_rows($result)) == 0) { // new item, insert into products
                         $v_date_added = ($v_date_added == 'NULL') ? CURRENT_TIMESTAMP : $v_date_added;
                         $sql = "SHOW TABLE STATUS LIKE '" . TABLE_PRODUCTS . "'";
