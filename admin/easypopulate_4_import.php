@@ -944,12 +944,19 @@ if (!is_null($_POST['import']) && isset($_POST['import'])) {
                         try {
                             $download_config = array();
                             foreach ($images as $index => $row) {
-                                $filename = $rootPath . $imagePath . md5($image) . ($index == 0 ? '' :  '_' . $index) . '.png';
+                                $filename = $rootPath . $imagePath . md5($image) . ($index == 0 ? '' : '_' . $index) . '.png';
                                 $download_config[] = array($row, $filename);
                             }
-                            $obj = new DownLoad($download_config, 20, 120);
-                            $handle_num = $obj->download();
-
+                            if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
+                                $obj = new DownLoad($download_config, 20, 120);
+                                $handle_num = $obj->download();
+                            } else {
+                                // linux 异步
+                                $handle = popen("php download_image.php &", "w");
+                                $params = ['config' => $download_config, 'max_process_num' => 20, 'timeout' => 120];
+                                fwrite($handle, serialize($params));
+                                pclose($handle);
+                            }
                         } catch (Exception $e) {
                         }
                     }
