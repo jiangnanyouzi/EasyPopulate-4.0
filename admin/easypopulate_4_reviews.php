@@ -6,6 +6,9 @@ if (!defined('IS_ADMIN_FLAG')) {
 }
 
 
+//====================================================================================
+//                       csv header v_id,v_reviews_text
+//====================================================================================
 // attribute import loop - read 1 line of data from input file
 while ($contents = fgetcsv($handle, 0, $csv_delimiter, $csv_enclosure)) { // while #1 - Main Loop
     $v_id = $contents[$filelayout['v_id']];
