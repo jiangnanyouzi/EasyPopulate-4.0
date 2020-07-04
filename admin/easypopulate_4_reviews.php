@@ -6,13 +6,12 @@ if (!defined('IS_ADMIN_FLAG')) {
 }
 
 
-//====================================================================================
-//                       csv header v_id,v_reviews_text
-//====================================================================================
 // attribute import loop - read 1 line of data from input file
 while ($contents = fgetcsv($handle, 0, $csv_delimiter, $csv_enclosure)) { // while #1 - Main Loop
     $v_id = $contents[$filelayout['v_id']];
     $v_reviews_text = $contents[$filelayout['v_reviews_text']];
+
+    $dateNum = rand(1, 10);
 
     $query = "SELECT * FROM " . TABLE_PRODUCTS . " WHERE (products_id = :v_id:) LIMIT 1";
     $query = $db->bindVars($query, ':v_id:', $v_id, 'integer');
@@ -35,7 +34,7 @@ while ($contents = fgetcsv($handle, 0, $csv_delimiter, $csv_enclosure)) { // whi
         $sql = $db->bindVars($sql, ':v_customers_id:', 0, 'integer');
         $sql = $db->bindVars($sql, ':v_customers_name:', random_user(), 'string');
         $sql = $db->bindVars($sql, ':v_reviews_rating:', 5, 'integer');
-        $sql = $db->bindVars($sql, ':v_date_added:', date('Y-m-d H:i:s'), 'date');
+        $sql = $db->bindVars($sql, ':v_date_added:', date('Y-m-d H:i:s', strtotime('-' . $dateNum . ' day')), 'date');
         $sql = $db->bindVars($sql, ':v_last_modified:', '0001-01-01 00:00:00', 'date');
         $sql = $db->bindVars($sql, ':v_reviews_read:', 0, 'integer');
         $sql = $db->bindVars($sql, ':v_status:', 1, 'integer');
