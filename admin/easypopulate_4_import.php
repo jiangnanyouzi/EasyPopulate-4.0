@@ -104,6 +104,10 @@ if (!is_null($_POST['import']) && isset($_POST['import'])) {
             require(DIR_WS_MODULES . 'easypopulate_4_import_categorymeta_ep.php');
         } // if
 
+        if (strtolower(substr($file['name'], 0, 10)) == "reviews-ep") {
+            require_once('easypopulate_4_reviews.php');
+        } // if
+
         if ((strtolower(substr($file['name'], 0, 15)) <> "categorymeta-ep") && (strtolower(substr($file['name'], 0, 7)) <> "attrib-") && ($ep_4_SBAEnabled != false ? (strtolower(substr($file['name'], 0, 4)) <> "sba-") : true)) { //  temporary solution here... 12-06-2010
             $zco_notifier->notify('EP4_IMPORT_GENERAL_FILE_ALL');
 

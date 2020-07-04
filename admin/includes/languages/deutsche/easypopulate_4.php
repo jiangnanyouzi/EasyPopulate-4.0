@@ -162,3 +162,5 @@ define('EASYPOPULATE_4_DISPLAY_IMPORT_RESULTS_MEM_PEAK','<br/>Speicherverbrauch 
 define('EASYPOPULATE_4_DISPLAY_IMPORT_RESULTS_EXEC_TIME','<br/>AusfÃ¼hrungszeit: %d seconds');
 define('EASYPOPULATE_4_DISPLAY_IMPORT_COMPLETE_ISSUES','Dateiimport mit Problemen abgeschlossen.');
 define('EASYPOPULATE_4_DISPLAY_IMPORT_COMPLETE','Dateiimport ohne Probleme abgeschlossen.');
+
+define('REVIEWS_BASIC_EP','Prefix: %1$s. %2$s durch die Basic Reviews Filter ausgefuehrt werden.');
