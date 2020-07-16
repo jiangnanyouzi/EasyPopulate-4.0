@@ -936,7 +936,7 @@ if (!is_null($_POST['import']) && isset($_POST['import'])) {
                     $sql = $db->bindVars($sql, ':products_model:', $v_products_model, 'string');
                     $sql = $db->bindVars($sql, ':products_id:', $v_products_id, 'integer');
                     $result = ep_4_query($sql);
-                    $images = explode(";", $items[1]);
+                    $images = explode(";", $items[$filelayout['v_products_image']]);
                     $image = $images[0];
                     if (stripos($image, 'http') !== false) {
                         $rootPath = realpath(__DIR__ . '/../') . '/images/';
@@ -1435,9 +1435,8 @@ if (!is_null($_POST['import']) && isset($_POST['import'])) {
                             $result = ep_4_query($sql);
 
                             if (($ep_uses_mysqli ? mysqli_num_rows($result) : mysql_num_rows($result)) == 0) {
-                                $sql = "INSERT INTO " . TABLE_PRODUCTS_DESCRIPTION . " (
-                            products_id,
-                  " . (isset($filelayout['v_products_name_' . $lang_id]) || $product_is_new ? "products_name, " : "") .
+                                $sql = "INSERT INTO " . TABLE_PRODUCTS_DESCRIPTION . " (products_id," .
+                                    (isset($filelayout['v_products_name_' . $lang_id]) || $product_is_new ? "products_name, " : "") .
                                     ((isset($filelayout['v_products_description_' . $lang_id]) || (isset($filelayout['v_products_description_' . $lang_id]) && $product_is_new)) ? " products_description, " : "");
                                 if ($ep_supported_mods['psd'] == true && isset($v_products_short_desc)) {
                                     $sql .= " products_short_desc,";
