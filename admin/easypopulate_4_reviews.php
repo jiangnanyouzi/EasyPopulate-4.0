@@ -9,14 +9,20 @@ if (!defined('IS_ADMIN_FLAG')) {
 // attribute import loop - read 1 line of data from input file
 while ($contents = fgetcsv($handle, 0, $csv_delimiter, $csv_enclosure)) { // while #1 - Main Loop
     $v_id = $contents[$filelayout['v_id']];
+    $v_products_model = $contents[$filelayout['v_products_model']];
     $v_reviews_text = $contents[$filelayout['v_reviews_text']];
     $v_customers_name = $contents[$filelayout['v_customers_name']];
 
     $dateNum = rand(1, 10);
 
-    $query = "SELECT * FROM " . TABLE_PRODUCTS . " WHERE (products_id = :v_id: or products_model = :v_products_model:) LIMIT 1";
-    $query = $db->bindVars($query, ':v_id:', $v_id, 'integer');
-    $query = $db->bindVars($query, ':v_products_model:', $v_id, 'string');
+    if (!empty($v_products_model)) {
+        $query = "SELECT * FROM " . TABLE_PRODUCTS . " WHERE (products_model = :v_products_model:) LIMIT 1";
+        $query = $db->bindVars($query, ':v_products_model:', $v_products_model, 'string');
+    } else {
+        $query = "SELECT * FROM " . TABLE_PRODUCTS . " WHERE (products_id = :v_id:) LIMIT 1";
+        $query = $db->bindVars($query, ':v_id:', $v_id, 'integer');
+    }
+
     $result = ep_4_query($query);
 
     if (($ep_uses_mysqli ? mysqli_num_rows($result) : mysql_num_rows($result)) == 0) { // products_model is not in TABLE_PRODUCTS
