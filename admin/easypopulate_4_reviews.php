@@ -10,11 +10,13 @@ if (!defined('IS_ADMIN_FLAG')) {
 while ($contents = fgetcsv($handle, 0, $csv_delimiter, $csv_enclosure)) { // while #1 - Main Loop
     $v_id = $contents[$filelayout['v_id']];
     $v_reviews_text = $contents[$filelayout['v_reviews_text']];
+    $v_customers_name = $contents[$filelayout['v_customers_name']];
 
     $dateNum = rand(1, 10);
 
-    $query = "SELECT * FROM " . TABLE_PRODUCTS . " WHERE (products_id = :v_id:) LIMIT 1";
+    $query = "SELECT * FROM " . TABLE_PRODUCTS . " WHERE (products_id = :v_id: or products_model = :v_products_model:) LIMIT 1";
     $query = $db->bindVars($query, ':v_id:', $v_id, 'integer');
+    $query = $db->bindVars($query, ':v_products_model:', $v_id, 'string');
     $result = ep_4_query($query);
 
     if (($ep_uses_mysqli ? mysqli_num_rows($result) : mysql_num_rows($result)) == 0) { // products_model is not in TABLE_PRODUCTS
@@ -32,7 +34,7 @@ while ($contents = fgetcsv($handle, 0, $csv_delimiter, $csv_enclosure)) { // whi
 						(:v_products_id:, :v_customers_id:, :v_customers_name:, :v_reviews_rating:, :v_date_added:, :v_last_modified:, :v_reviews_read:, :v_status:)";
         $sql = $db->bindVars($sql, ':v_products_id:', $v_products_id, 'integer');
         $sql = $db->bindVars($sql, ':v_customers_id:', 0, 'integer');
-        $sql = $db->bindVars($sql, ':v_customers_name:', random_user(), 'string');
+        $sql = $db->bindVars($sql, ':v_customers_name:', empty($v_customers_name) ? random_user() : $v_customers_name, 'string');
         $sql = $db->bindVars($sql, ':v_reviews_rating:', 5, 'integer');
         $sql = $db->bindVars($sql, ':v_date_added:', date('Y-m-d H:i:s', strtotime('-' . $dateNum . ' day')), 'date');
         $sql = $db->bindVars($sql, ':v_last_modified:', '0001-01-01 00:00:00', 'date');
