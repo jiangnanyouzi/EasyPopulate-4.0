@@ -70,10 +70,6 @@ function random_user() {
     $frist_num = mt_rand(0, 19);
     $sur_num = mt_rand(0, 19);
     $type = rand(0, 1);
-    if ($type == 0) {
-        $username = $male_names[$frist_num] . " " . $surnames[$sur_num];
-    } else {
-        $username = $famale_names[$frist_num] . " " . $surnames[$sur_num];
-    }
-    return $username;
+    if ($type == 0) return $male_names[$frist_num] . " " . $surnames[$sur_num];
+    return $famale_names[$frist_num] . " " . $surnames[$sur_num];
 }
