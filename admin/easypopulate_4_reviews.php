@@ -26,7 +26,7 @@ while ($contents = fgetcsv($handle, 0, $csv_delimiter, $csv_enclosure)) { // whi
     $result = ep_4_query($query);
 
     if (($ep_uses_mysqli ? mysqli_num_rows($result) : mysql_num_rows($result)) == 0) { // products_model is not in TABLE_PRODUCTS
-        $display_output .= sprintf('<br /><font color="red"><b>SKIPPED! - Model: </b>%s - Not Found! Unable to apply attributes.</font>', $v_id);
+        $display_output .= sprintf('<br /><font color="red"><b>SKIPPED! - Model: </b>%s - Not Found! Unable to apply attributes.</font>', !empty($v_products_model) ? $v_products_model : $v_id);
         $ep_error_count++;
         continue; // skip current record (returns to while #1)
     }
