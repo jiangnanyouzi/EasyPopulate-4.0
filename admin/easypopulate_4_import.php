@@ -943,7 +943,7 @@ if (!is_null($_POST['import']) && isset($_POST['import'])) {
                         $imagePath = 'easypopulate/' . date('Y/m/d/') . $v_products_model . '/';
                         @mkdir($rootPath . $imagePath, 0777, true);
                         @chmod($rootPath . $imagePath, 0777);
-                        $v_products_image = $imagePath . md5($image) . '.png';
+                        $v_products_image = $imagePath . md5($image) . '.jpg';
 
                         try {
                             $download_config = array();
