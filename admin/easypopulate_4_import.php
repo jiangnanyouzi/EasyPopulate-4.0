@@ -378,6 +378,7 @@ if (!is_null($_POST['import']) && isset($_POST['import'])) {
                 // chadd - 12-13-2010 - this should allow you to update descriptions only for any given language of the import file!
                 // cycle through all defined language codes, but only update those languages defined in the import file
                 // Note 11-08-2011: I may remove the "smart_tags_4" function for better performance.
+                $download_wait_url = array();
                 foreach ($langcode as $lang) {
                     $l_id = $lang['id'];
                     // products meta tags
@@ -411,6 +412,28 @@ if (!is_null($_POST['import']) && isset($_POST['import'])) {
                     if (isset($filelayout['v_products_description_' . $l_id])) { // do for each language in our upload file if exist
                         // utf-8 conversion of smart-quotes, em-dash, en-dash, and ellipsis
                         $v_products_description[$l_id] = ep_4_curly_quotes($items[$filelayout['v_products_description_' . $l_id]]);
+
+
+                        $images = explode(";", $items[$filelayout['v_products_image']]);
+                        $image = $images[0];
+                        $detail = $v_products_description[$l_id];
+                        preg_match_all("/(href|src)=([\"|\']?)([^\"\'>]+.(jpg|JPG|jpeg|JPEG|png|PNG|gif|GIF))/i", $detail, $match);
+
+                        if (stripos($image, 'http') !== false && isset($match[3])) {
+                            $scheme = parse_url($image, PHP_URL_SCHEME);
+                            $host = parse_url($image, PHP_URL_HOST);
+                            $rootPath = realpath(__DIR__ . '/../');
+                            $imagePath = '/images/easypopulate/' . date('Y/m/d/');
+                            foreach ($match[3] as $index => $row) {
+                                $basename = $imagePath . md5($row) . '.jpg';
+                                $detail = str_replace($row, $basename, $detail);
+                                if (stripos($row, 'http') === false) $row = $scheme . '://' . $host . '/' . $row;
+                                $download_wait_url[] = array($row, $rootPath . $basename);
+                            }
+                            $v_products_description[$l_id] = $detail;
+                        }
+
+
                         if ($ep_supported_mods['psd'] == true) { // if short descriptions exist
                             $v_products_short_desc[$l_id] = ep_4_curly_quotes($items[$filelayout['v_products_short_desc_' . $l_id]]);
                         }
@@ -948,9 +971,10 @@ if (!is_null($_POST['import']) && isset($_POST['import'])) {
                         try {
                             $download_config = array();
                             foreach ($images as $index => $row) {
-                                $filename = $rootPath . $imagePath . md5($image) . ($index == 0 ? '' : '_' . $index) . '.png';
+                                $filename = $rootPath . $imagePath . md5($image) . ($index == 0 ? '' : '_' . $index) . '.jpg';
                                 $download_config[] = array($row, $filename);
                             }
+                            if (count($download_wait_url) > 0) $download_config = array_merge($download_config, $download_wait_url);
                             $obj = new DownLoad($download_config, 20, 120);
                             $handle_num = $obj->download();
                         } catch (Exception $e) {
@@ -1455,7 +1479,7 @@ if (!is_null($_POST['import']) && isset($_POST['import'])) {
                                 $sql .= (isset($filelayout['v_products_url_' . $lang_id]) ? ":v_products_url:, " : "");
                                 $zco_notifier->notify('EP4_IMPORT_FILE_PRODUCTS_DESCRIPTION_INSERT_FIELDS_VALUES');
                                 $sql .= "
-                   :language_id:)";
+                 :language_id:)";
 
                                 $zco_notifier->notify('EP4_IMPORT_FILE_PRODUCTS_DESCRIPTION_FIELDS_BIND_START');
                                 $sql = $db->bindVars($sql, ':v_products_id:', $v_products_id, 'integer');
